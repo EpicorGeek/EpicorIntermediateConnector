@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace The_Friend_Network
+namespace StrategicCustomerManagement
 {
     static class Program
     {
@@ -16,7 +16,7 @@ namespace The_Friend_Network
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FriendNetworkForm());
+            Application.Run(new StrategicCustomerForm());
         }
     }
 }

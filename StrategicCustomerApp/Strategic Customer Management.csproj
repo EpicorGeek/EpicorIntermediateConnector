@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{2DFE6822-958F-43F9-9CE3-EC8862293873}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>The_Friend_Network</RootNamespace>
-    <AssemblyName>The Friend Network</AssemblyName>
+    <RootNamespace>StrategicCustomerManagement</RootNamespace>
+    <AssemblyName>ConnectedQuickStart</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -31,15 +31,16 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\star.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=8.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\ISVConsoleUI\packages\Newtonsoft.Json.8.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.ValueTuple, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\ISVConsoleUI\packages\System.ValueTuple.4.4.0\lib\netstandard1.0\System.ValueTuple.dll</HintPath>
-    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -51,19 +52,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FriendNetworkForm.cs">
+    <Compile Include="ConnectionPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ConnectionPanel.Designer.cs">
+      <DependentUpon>ConnectionPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="StrategicCustomerForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FriendNetworkForm.Designer.cs">
-      <DependentUpon>FriendNetworkForm.cs</DependentUpon>
+    <Compile Include="StrategicCustomerForm.Designer.cs">
+      <DependentUpon>StrategicCustomerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="FriendNetworkForm.resx">
-      <DependentUpon>FriendNetworkForm.cs</DependentUpon>
+    <EmbeddedResource Include="ConnectionPanel.resx">
+      <DependentUpon>ConnectionPanel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="StrategicCustomerForm.resx">
+      <DependentUpon>StrategicCustomerForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -87,14 +97,40 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\EpicorImg.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="Resources\SaveIcon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ISVConsoleUI\RESTDotNet\ExampleCustomerREST.csproj">
+    <None Include="Resources\DeleteIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\RefreshIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\saveImg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\refreshImg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\deleteImg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\newImg.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\connected.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\star.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\GenericsEpicorAPI\GenericsEpicorAPI.csproj">
+      <Project>{34a980f0-0b2f-4624-ae70-13984c306016}</Project>
+      <Name>GenericsEpicorAPI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\RESTDotNetLib\CustomerREST.csproj">
       <Project>{e5cf413c-04fc-4f65-ad07-14c59168d802}</Project>
-      <Name>ExampleCustomerREST</Name>
+      <Name>CustomerREST</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

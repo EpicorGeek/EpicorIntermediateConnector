@@ -3,26 +3,38 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using RestSharp;
 
-namespace RESTDotNet
+namespace GenericsEpicorAPI
 {
-    public partial class ExampleCustomerREST
+    public class RESTAPI
     {
+        private bool UseBearerToken { get; }
+
+
         public struct EpicorConnectionInfo
         {
-            //Epicor Login Credentials
+            //Authorization Information
             public string EpicorUsername { get; set; }
             public string EpicorPassword { get; set; }
+            public string BearerToken { get; set; }
 
-            //URL to Access
+            //Access Information
             public string EpicorServer { get; set; }
             public string EpicorApplicationName { get; set; }
         }
 
-        
+        public RESTAPI(EpicorConnectionInfo conInfo, bool useBearerToken = false)
+        {
+            _conInfo = conInfo;
+            UseBearerToken = useBearerToken;
+            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+        }
 
+        /// <summary>
+        /// Return the last url requested
+        /// </summary>
         public string LastUrlRequested { get; private set; }
 
         private EpicorConnectionInfo _conInfo;
@@ -51,8 +63,16 @@ namespace RESTDotNet
                 epicorObjectMethod);
         }
 
-        private string GenericRequest(Method mType, string epicorObject, string epicorMethod,
-            IEnumerable<(string name, string value)> paramList = null)
+        /// <summary>
+        /// Generic call 
+        /// </summary>
+        /// <param name="mType"></param>
+        /// <param name="epicorObject"></param>
+        /// <param name="epicorMethod"></param>
+        /// <param name="paramList"></param>
+        /// <returns></returns>
+        public string GenericRequest(Method mType, string epicorObject, string epicorMethod,
+            IEnumerable<(string name, object value)> paramList = null)
         {
             try
             {
@@ -60,14 +80,17 @@ namespace RESTDotNet
                 var rClient = new RestClient(LastUrlRequested);
                 var request = new RestRequest(mType);
                 request.AddHeader("cache-control", "no-cache");
-                request.AddHeader("authorization",
-                    $"Basic {Convert.ToBase64String(Encoding.Default.GetBytes($"{_conInfo.EpicorUsername}:{_conInfo.EpicorPassword}"))}");
 
-                if (paramList?.Count() > 0)
+                request.AddHeader("authorization",
+                    UseBearerToken
+                        ? $"Bearer {_conInfo.BearerToken}"
+                        : $"Basic {Convert.ToBase64String(Encoding.Default.GetBytes($"{_conInfo.EpicorUsername}:{_conInfo.EpicorPassword}"))}");
+
+                if (paramList != null && paramList.Any())
                 {
                     request.AddHeader("content-type", "application/json");
 
-                    foreach (var parameter in paramList ?? new List<(string name, string value)>())
+                    foreach (var parameter in paramList)
                         request.AddParameter(parameter.name, parameter.value, ParameterType.RequestBody);
                 }
 
@@ -81,14 +104,22 @@ namespace RESTDotNet
             }
         }
 
-        //Constructor
-        public ExampleCustomerREST(EpicorConnectionInfo conInfo)
+        /// <summary>
+        /// Validate if the given string is a valid json string
+        /// </summary>
+        /// <param name="jStr"></param>
+        /// <returns></returns>
+        public static bool IsValidJsonStr(string jStr)
         {
-            this._conInfo = conInfo;
-
-            //Allows calls to a self certificated application
-            ServicePointManager.ServerCertificateValidationCallback = delegate { return true; };
+            try
+            {
+                JToken.Parse(jStr);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
-
     }
 }

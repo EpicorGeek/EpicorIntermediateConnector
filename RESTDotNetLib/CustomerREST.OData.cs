@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using RestSharp;
 
-namespace RESTDotNet
+namespace EpicorRestApi
 {
-    public partial class ExampleCustomerREST
+    public partial class CustomerREST
     {
         /// <summary>
         /// Not a real GetByID, instead make use of OData protocol
@@ -18,7 +19,7 @@ namespace RESTDotNet
         /// <returns></returns>
         public string GetById(string company, string custId)
         {
-            return GenericRequest(Method.GET, "Erp.BO.CustomerSvc",
+            return epicorRestApi.GenericRequest(Method.GET, "Erp.BO.CustomerSvc",
                 $"Customers?$filter=Company eq '{company}' and CustID eq '{custId}'");
         }
 
@@ -30,7 +31,7 @@ namespace RESTDotNet
         /// <returns></returns>
         public string GetById(string company, int custNum)
         {
-            return GenericRequest(Method.GET, "Erp.BO.CustomerSvc", $"Customers({company}, {custNum})");
+            return epicorRestApi.GenericRequest(Method.GET, "Erp.BO.CustomerSvc", $"Customers({company}, {custNum})");
         }
 
         /// <summary>
@@ -42,7 +43,7 @@ namespace RESTDotNet
         {
             whereClause = whereClause.StartsWith("?$") ? whereClause : "?$" + whereClause;
 
-            return GenericRequest(Method.GET, "Erp.BO.CustomerSvc",
+            return epicorRestApi.GenericRequest(Method.GET, "Erp.BO.CustomerSvc",
                 $"Customers{whereClause}");
         }
 
@@ -50,45 +51,37 @@ namespace RESTDotNet
         {
             whereClause = whereClause.StartsWith("?$") ? whereClause : "?$" + whereClause;
 
-            return GenericRequest(Method.GET, "Erp.BO.CustomerSvc",
+            return epicorRestApi.GenericRequest(Method.GET, "Erp.BO.CustomerSvc",
                 $"List{whereClause}");
         }
 
-        public string Update(string companyId, int custNum, IEnumerable<(string field, string value)> modifiedFields)
+        public string Update(string companyId, int custNum, Dictionary<string, object> modifiedFields)
         {
-            var jParam = $@"{{ ""CustNum"" : {custNum}";
+            var paramList = JsonConvert.SerializeObject(modifiedFields);
 
-            jParam = modifiedFields.Aggregate(jParam, (current, modifiedField) => current + $@", ""{modifiedField.field}"": ""{modifiedField.value}"" ");
-            jParam += "}";
-
-
-            var paramList = new List<(string name, string value)>
+            var paramWrapper = new List<(string name, object value)>
             {
-                ("application/json", jParam)
+                ("application/json", paramList)
             };
-           
-            return GenericRequest(Method.PATCH, "Erp.BO.CustomerSvc", $"Customers('{companyId}',{custNum})", paramList);
+
+            return epicorRestApi.GenericRequest(Method.PATCH, "Erp.BO.CustomerSvc", $"Customers('{companyId}',{custNum})", paramWrapper);
         }
 
-        public string GetNewCustomer(string companyId, IEnumerable<(string field, string value)> customerFields)
+        public string GetNewCustomer(string companyId, Dictionary<string, object> customerFields)
         {
-            var jParam = $@"{{ ""Company"" : ""{companyId}""";
+            var paramList = JsonConvert.SerializeObject(customerFields);
 
-            jParam = customerFields.Aggregate(jParam, (current, customerField) => current + $@", ""{customerField.field}"": ""{customerField.value}"" ");      
-            jParam += "}";
-
-
-            var paramList = new List<(string name, string value)>
+            var paramWrapper = new List<(string name, object value)>
             {
-                ("application/json", jParam)
+                ("application/json", paramList)
             };
 
-            return GenericRequest(Method.POST, "Erp.BO.CustomerSvc", $"Customers", paramList);            
+            return epicorRestApi.GenericRequest(Method.POST, "Erp.BO.CustomerSvc", $"Customers", paramWrapper);
         }
 
         public string DeleteCustomer(string companyId, int custNum)
         {
-            return GenericRequest(Method.DELETE, "Erp.BO.CustomerSvc", $"Customers('{companyId}',{custNum})");
+            return epicorRestApi.GenericRequest(Method.DELETE, "Erp.BO.CustomerSvc", $"Customers('{companyId}',{custNum})");
         }
     }
 }
